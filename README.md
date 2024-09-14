@@ -1,5 +1,5 @@
 Expo QRCode Generator & Scanner
-
+-------------------------------
 Stack: React Native, FastApi
 -------------------------------
 To run frontend

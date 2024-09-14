@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Image, ActivityIndicator, Platform, Alert } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, Image, ActivityIndicator, Platform, Alert, Linking, SafeAreaView } from 'react-native';
 import axios from 'axios';
-import RNFS from 'react-native-fs';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { Stack } from 'expo-router';
 
 const QRCodeGenerator: React.FC = () => {
   const [text, setText] = useState<string>('');
@@ -27,43 +27,21 @@ const QRCodeGenerator: React.FC = () => {
     }
   };
 
-  const handleDownload = async () => {
-    if (!qrUrl) return;
 
-    // Request permission to access storage
-    const permission = Platform.select({
-      android: PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
-      ios: PERMISSIONS.IOS.PHOTO_LIBRARY,
-    });
-
-    if (permission) {
-      const result = await request(permission);
-      if (result === RESULTS.GRANTED) {
-        try {
-          const downloadDest = `${RNFS.ExternalDirectoryPath}/QRCode.png`;
-          const downloadResult = await RNFS.downloadFile({
-            fromUrl: qrUrl,
-            toFile: downloadDest,
-          }).promise;
-
-          if (downloadResult.statusCode === 200) {
-            Alert.alert('Download successful', `QR Code downloaded to: ${downloadDest}`);
-          } else {
-            Alert.alert('Download failed', 'Something went wrong during the download.');
-          }
-        } catch (err) {
-          Alert.alert('Error', 'Error downloading the QR code.');
-        }
-      } else {
-        Alert.alert('Permission Denied', 'You need to grant storage permissions to download files.');
-      }
-    }
-  };
 
   return (
+    <SafeAreaView style={StyleSheet.absoluteFillObject}>
+    <Stack.Screen
+      options={{
+        title: "QR Code Generator",
+        headerShown: false,
+      }}
+    />
     <View style={styles.container}>
       <Text style={styles.title}>QR Code Generator</Text>
+      
       <TextInput
+      
         style={styles.input}
         placeholder="Enter text here"
         value={text}
@@ -75,11 +53,12 @@ const QRCodeGenerator: React.FC = () => {
       {qrUrl && !loading && !error && (
         <View style={styles.qrContainer}>
           <Image source={{ uri: qrUrl }} style={styles.qrImage} />
-          <Button title="Download QR Code" onPress={handleDownload} />
+          <Button title="Download QR Code" onPress={() => Linking.openURL(qrUrl)} />
           <Text>Qrcode removes after 1min</Text>
         </View>
       )}
     </View>
+    </SafeAreaView>
   );
 };
 

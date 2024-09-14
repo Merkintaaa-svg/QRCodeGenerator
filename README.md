@@ -1,5 +1,6 @@
 Expo QRCode Generator & Scanner
-Stack: react native, fastapi
+
+Stack: React Native, FastApi
 -------------------------------
 To run frontend
 Cd to ExpoQRCode, npm run start
